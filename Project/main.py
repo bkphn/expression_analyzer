@@ -48,6 +48,7 @@ if __name__ == '__main__':
             y_train = np.load(os.path.join("Model", "y_train.npy"))
             X_test = np.load(os.path.join("Model", "X_test.npy"))
             y_test = np.load(os.path.join("Model", "y_test.npy"))
+
         except FileNotFoundError:
             print(f"{RED}Nie znaleziono plików, wygeneruj dane na nowo.{RESET}")
         print(f"{YELLOW}Dane wczytano pomyślnie...")
