@@ -2,6 +2,7 @@ import os
 import numpy as np
 
 from preprocessing import preprocess_data
+from metrics import run_metrics
 
 # ----- MODEL SETTINGS -----
 PREPROCESSING = False
@@ -51,3 +52,9 @@ if __name__ == '__main__':
             print(f"{RED}Nie znaleziono plików, wygeneruj dane na nowo.{RESET}")
         print(f"{YELLOW}Dane wczytano pomyślnie...")
 
+    #TODO MARTA Tutaj trzeba wywołać drzewa, dane musisz sobie wygenerować
+    # i zapiszą się w folderze Model, X to macierz atrybutów, a y to etykiety.
+
+    #TODO MARTA Podliczaj od razu FP, FN, TP, TN będzie łatwiej potem dane z tego wyciągnąć.
+
+    #TODO ADAM Potem tutaj wstawię wywołanie run_metrics()
