@@ -4,7 +4,7 @@ import numpy as np
 from preprocessing import preprocess_data
 
 # ----- MODEL SETTINGS -----
-PREPROCESSING = True
+PREPROCESSING = False
 
 # ----- CMD COLOR SETTINGS -----
 RED = '\033[91m \x1B[3m'
@@ -40,3 +40,14 @@ if __name__ == '__main__':
         np.save(os.path.join("Model", "X_test.npy"), X_test)
         np.save(os.path.join("Model", "y_test.npy"), y_test)
         print(f"{GREEN}Dane zapisane pomyślnie.{RESET}")
+    else:
+        print(f"{YELLOW}Wczytuję dane z pliku...")
+        try:
+            X_train = np.load(os.path.join("Model", "X_train.npy"))
+            y_train = np.load(os.path.join("Model", "y_train.npy"))
+            X_test = np.load(os.path.join("Model", "X_test.npy"))
+            y_test = np.load(os.path.join("Model", "y_test.npy"))
+        except FileNotFoundError:
+            print(f"{RED}Nie znaleziono plików, wygeneruj dane na nowo.{RESET}")
+        print(f"{YELLOW}Dane wczytano pomyślnie...")
+
