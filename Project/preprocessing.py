@@ -32,7 +32,8 @@ def preprocess_data(emotions_map, path):
             if filename.endswith(".jpg"):
                 image_path = os.path.join(emotion_path, filename)
 
-                features.append(preprocess_image(image_path))
+                processed_image = preprocess_image(image_path)
+                features.append(extract_features(processed_image))
                 labels.append(emotion_label)
         print(f"{GREEN}Przetworzono klasę {emotion_name}{RESET}")
 
