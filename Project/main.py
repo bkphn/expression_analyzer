@@ -7,7 +7,7 @@ from metrics import run_metrics, plot_confusion_matrix
 from random_forest import RandomForest
 
 # ----- MODEL SETTINGS -----
-PREPROCESSING = True
+PREPROCESSING = False
 TRAIN_MODEL = True
 
 # ----- CMD COLOR SETTINGS -----
