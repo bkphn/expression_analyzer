@@ -33,10 +33,10 @@ if __name__ == '__main__':
         print(f"{GREEN}Ekstrakcja cech zakończona pomyślnie.{RESET}")
 
         print(f"{GREEN}\nGeneruję macierze cech HOG i wektory etykiet...{RESET}")
-        X_train = np.array(train_features)
-        y_train = np.array(train_labels)
-        X_test = np.array(test_features)
-        y_test = np.array(test_labels)
+        X_train = np.array(train_features, dtype=np.float32)
+        y_train = np.array(train_labels, dtype=np.float32)
+        X_test = np.array(test_features, dtype=np.float32)
+        y_test = np.array(test_labels, dtype=np.float32)
         print(f"{GREEN}Pomyślnie stworzono i zapisano pliki.{RESET}")
 
         print(f"{GREEN}\nZapisuję dane do pliku...{RESET}")
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     if TRAIN_MODEL:
         print(f"{GREEN}\nRozpoczynam klasyfikację lasem losowym...{RESET}")
-        random_forest = RandomForest(30, 15)
+        random_forest = RandomForest(100, 15)
         random_forest.train(X_train, y_train)
         print(f"{GREEN}Klasyfikacja zakończona pomyślnie.{RESET}")
         print(f"{GREEN}Zapisuję wytrenowany model do pliku...{RESET}")
@@ -76,6 +76,6 @@ if __name__ == '__main__':
     predictions = random_forest.predict(X_test)
 
     print(f"{GREEN}\nGeneruję macierz pomyłek...{RESET}")
-    emotions_list = ["Angry", "Disgust", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
+    emotions_list = ["Angry", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
     plot_confusion_matrix(y_test, predictions, emotions_list)
     print(f"{GREEN}Macierz wygenerowana pomyślnie.{RESET}")

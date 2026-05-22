@@ -13,8 +13,9 @@ def extract_features(image):
     return hog(image, orientations=8, pixels_per_cell=(6, 6),
                cells_per_block=(2, 2), transform_sqrt=True, feature_vector=True)
 
-def preprocess_image(image_path, flip):
+def preprocess_image(image_path):
     image = io.imread(image_path, as_gray=True)
+    image = exposure.equalize_adapthist(image, clip_limit=0.03)
     image = image / 255.0
 
     return image
@@ -33,7 +34,7 @@ def preprocess_data(emotions_map, path):
             if filename.endswith(".jpg"):
                 image_path = os.path.join(emotion_path, filename)
 
-                processed_image = preprocess_image(image_path, False)
+                processed_image = preprocess_image(image_path)
                 features.append(extract_features(processed_image))
                 labels.append(emotion_label)
 

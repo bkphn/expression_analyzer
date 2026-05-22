@@ -102,7 +102,7 @@ class DecisionTree:
         return node
 
     def train(self, X, y):
-        train_data = np.concatenate((X, y.reshape(-1, 1)), axis=1)
+        train_data = np.concatenate((X, y.reshape(-1, 1)), axis=1, dtype=np.float32)
         self.tree = self.create_tree(data=train_data, current_depth=0)
 
     def predict_one_sample(self, X_sample):
