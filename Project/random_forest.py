@@ -20,13 +20,10 @@ class TreeNode:
 
 
 class DecisionTree:
-    def __init__(self, max_depth=3, min_samples_leaf=1):
+    def __init__(self, max_depth=3, min_samples_leaf=5):
         self.max_depth = max_depth
         self.min_samples_leaf = min_samples_leaf
         self.tree = None
-
-    def entropy(self, class_probabilities):
-        return sum([-p * np.log2(p) for p in class_probabilities if p > 0])
 
     def calculate_entropy_for_data(self, labels):
         total_samples = len(labels)
@@ -34,7 +31,7 @@ class DecisionTree:
             return 0
         _, counts = np.unique(labels, return_counts=True)
         probabilities = counts / total_samples
-        return self.entropy(probabilities)
+        return -np.sum(probabilities * np.log2(probabilities))
 
     def split(self, data, feature_idx, feature_val):
         mask = data[:, feature_idx] < feature_val
@@ -55,11 +52,8 @@ class DecisionTree:
 
         for idx in feature_indices:
 
-            col_min = np.min(data[:, idx])
-            col_max = np.max(data[:, idx])
-
-            thresholds = np.linspace(col_min, col_max, num=10)
-
+            thresholds = np.percentile(data[:, idx], [20, 40, 60, 80])
+            thresholds = np.unique(thresholds)
 
             for val in thresholds:
                 left_split, right_split = self.split(data, idx, val)
@@ -147,8 +141,8 @@ class RandomForest:
         tree.train(X_sample, y_sample)
         return tree
 
-    def train(self, X_train, y_train, n_jobs=10):
-        i=1
+    def train(self, X_train, y_train, n_jobs=5):
+        i = 1
         print(f"{GREEN}\nRozpoczynam trenowanie...{RESET}")
         with concurrent.futures.ProcessPoolExecutor(max_workers=n_jobs) as executor:
             futures = [executor.submit(self.train_single_tree, X_train, y_train)
@@ -158,7 +152,7 @@ class RandomForest:
                 trained_tree = future.result()
                 self.trees.append(trained_tree)
                 print(f"{GREEN}Wytrenowano drzewo {i}/{self.n_estimators}.{RESET}")
-                i+=1
+                i += 1
 
     def predict(self, X):
         print(f"{GREEN}\nRozpoczynam predykcję...{RESET}")

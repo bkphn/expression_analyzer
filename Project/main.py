@@ -7,7 +7,7 @@ from metrics import run_metrics, plot_confusion_matrix
 from random_forest import RandomForest
 
 # ----- MODEL SETTINGS -----
-PREPROCESSING = False
+PREPROCESSING = True
 TRAIN_MODEL = True
 
 # ----- CMD COLOR SETTINGS -----
@@ -23,8 +23,8 @@ MODEL_FILE = os.path.join("Model", "saved_rf_model.pkl")
 
 # ------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    emotions_map = {"angry": 0, "disgust": 1, "fear": 2, "happy": 3,
-                    "neutral": 4, "sad": 5, "surprise": 6}
+    emotions_map = {"angry": 0, "fear": 1, "happy": 2,
+                    "neutral": 3, "sad": 4, "surprise": 5}
 
     if PREPROCESSING:
         print(f"{GREEN}Rozpoczynam ekstrakcję cech HOG...\n{RESET}")
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     if TRAIN_MODEL:
         print(f"{GREEN}\nRozpoczynam klasyfikację lasem losowym...{RESET}")
-        random_forest = RandomForest(10, 15)
+        random_forest = RandomForest(30, 15)
         random_forest.train(X_train, y_train)
         print(f"{GREEN}Klasyfikacja zakończona pomyślnie.{RESET}")
         print(f"{GREEN}Zapisuję wytrenowany model do pliku...{RESET}")
