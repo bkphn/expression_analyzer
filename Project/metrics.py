@@ -1,8 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 
+
+RED = '\033[91m \x1B[3m'
+YELLOW = '\033[93m \x1B[3m'
+GREEN = '\033[92m \x1B[3m'
+RESET = '\033[0m \x1B[0m'
 
 def plot_confusion_matrix(y_true, y_pred, class_names):
     cm = confusion_matrix(y_true, y_pred)
@@ -31,25 +36,62 @@ def plot_confusion_matrix(y_true, y_pred, class_names):
     plt.show()
 
 
+def print_detailed_metrics(y_true, y_pred, class_names):
+    run_metrics(y_true, y_pred, class_names)
+    report = classification_report(y_true, y_pred, target_names=class_names, zero_division=0)
+    print(report)
+
+
 def accuracy(TP, TN, FP, FN):
-    return (TP + TN) / (TP + FP + FN + TN)
+    return (TP + TN) / (TP + FP + FN + TN) if (TP + FP + FN + TN) > 0 else 0
 
 def sensitivity_recall(TP, TN, FP, FN):
-    return (TP) / (TP + FN)
+    return (TP) / (TP + FN) if (TP + FN) > 0 else 0
 
 def presision(TP, TN, FP, FN):
-    return (TP) / (TP + FP)
+    return (TP) / (TP + FP) if (TP + FP) > 0 else 0
 
 def f1_score(TP, TN, FP, FN):
-    return 0
+    return (2*TP) / (2*TP + FP + FN) if (2*TP + FP + FN) > 0 else 0
 
 def specificity(TP, TN, FP, FN):
-    return 0
+    return (TN) / (TN + FP) if (TN + FP) > 0 else 0
 
-def run_metrics(TP, TN, FP, FN):
-    metrics = [accuracy, sensitivity_recall, presision, f1_score, specificity]
+def run_metrics(y_true, y_pred, class_names):
+    cm = confusion_matrix(y_true, y_pred)
+    total_samples = cm.sum()
+    metrics = {accuracy : 'Accuracy', sensitivity_recall : 'Sensitivity Recall',
+               presision : 'Precision', f1_score : 'F1 Score', specificity : 'Specificity'}
 
-    for metric in metrics:
-        score = metric(TP, TN, FP, FN)
+    total_TP, total_FP, total_TN, total_FN = 0, 0, 0, 0
 
-        print(f"{metric} = {score}")
+    for i, class_name in enumerate(class_names):
+        print(f"\nKlasa: {class_name}")
+
+        TP = cm[i, i]
+        total_TP += TP
+        FP = cm[:, i].sum() - TP
+        total_FP += FP
+        FN = cm[i, :].sum() - TP
+        total_FN += FN
+        TN = total_samples - (TP + FP + FN)
+        total_TN += TN
+
+        print(f"  True Positives  (TP): {TP}")
+        print(f"  False Positives (FP): {FP}")
+        print(f"  True Negatives  (TN): {TN}")
+        print(f"  False Negatives (FN): {FN}")
+
+        for metric, metric_str in metrics.items():
+            score = metric(TP, TN, FP, FN)
+            print(f"  {metric_str} = {score*100:.2f}%")
+
+    print(f"\nOgółem:")
+    print(f"  True Positives  (TP): {total_TP}")
+    print(f"  False Positives (FP): {total_FP}")
+    print(f"  True Negatives  (TN): {total_TN}")
+    print(f"  False Negatives (FN): {total_FN}")
+
+    for metric, metric_str in metrics.items():
+        score = metric(total_TP, total_TN, total_FP, total_FN)
+        print(f"  {metric_str} = {score * 100:.2f}%")

@@ -3,12 +3,12 @@ import pickle
 import numpy as np
 
 from preprocessing import preprocess_data
-from metrics import run_metrics, plot_confusion_matrix
+from metrics import plot_confusion_matrix, print_detailed_metrics
 from random_forest import RandomForest
 
 # ----- MODEL SETTINGS -----
 PREPROCESSING = False
-TRAIN_MODEL = True
+TRAIN_MODEL = False
 
 # ----- CMD COLOR SETTINGS -----
 RED = '\033[91m \x1B[3m'
@@ -79,3 +79,7 @@ if __name__ == '__main__':
     emotions_list = ["Angry", "Fear", "Happy", "Neutral", "Sad", "Surprise"]
     plot_confusion_matrix(y_test, predictions, emotions_list)
     print(f"{GREEN}Macierz wygenerowana pomyślnie.{RESET}")
+
+    print(f"{GREEN}\nPrzygotowuję metryki modelu...{RESET}")
+    print_detailed_metrics(y_test, predictions, emotions_list)
+    print(f"{GREEN}\nWypisywanie metryk zakończone.{RESET}")
