@@ -5,10 +5,12 @@ import numpy as np
 from preprocessing import preprocess_data
 from metrics import plot_confusion_matrix, run_metrics
 from random_forest import RandomForest
+from validation_curve import plot_tree_validation_curve
 
 # ----- MODEL SETTINGS -----
 PREPROCESSING = False
 TRAIN_MODEL = False
+VALIDATION_CURVE = False
 
 # ----- CMD COLOR SETTINGS -----
 RED = '\033[91m \x1B[3m'
@@ -83,3 +85,8 @@ if __name__ == '__main__':
     print(f"{GREEN}\nPrzygotowuję metryki modelu...{RESET}")
     run_metrics(y_test, predictions, emotions_list)
     print(f"{GREEN}\nWypisywanie metryk zakończone.{RESET}")
+
+    if VALIDATION_CURVE:
+        print(f"{GREEN}\nGenerowanie krzywej walidacji...{RESET}")
+        plot_tree_validation_curve(X_train, y_train, X_test, y_test)
+        print(f"{GREEN}Krzywa walidacji wygenerowana pomyślnie.{RESET}")
