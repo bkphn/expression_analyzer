@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 from preprocessing import preprocess_data
-from metrics import plot_confusion_matrix, print_detailed_metrics
+from metrics import plot_confusion_matrix, run_metrics
 from random_forest import RandomForest
 
 # ----- MODEL SETTINGS -----
@@ -81,5 +81,5 @@ if __name__ == '__main__':
     print(f"{GREEN}Macierz wygenerowana pomyślnie.{RESET}")
 
     print(f"{GREEN}\nPrzygotowuję metryki modelu...{RESET}")
-    print_detailed_metrics(y_test, predictions, emotions_list)
+    run_metrics(y_test, predictions, emotions_list)
     print(f"{GREEN}\nWypisywanie metryk zakończone.{RESET}")

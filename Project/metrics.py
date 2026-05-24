@@ -36,12 +36,6 @@ def plot_confusion_matrix(y_true, y_pred, class_names):
     plt.show()
 
 
-def print_detailed_metrics(y_true, y_pred, class_names):
-    run_metrics(y_true, y_pred, class_names)
-    report = classification_report(y_true, y_pred, target_names=class_names, zero_division=0)
-    print(report)
-
-
 def accuracy(TP, TN, FP, FN):
     return (TP + TN) / (TP + FP + FN + TN) if (TP + FP + FN + TN) > 0 else 0
 
@@ -57,41 +51,108 @@ def f1_score(TP, TN, FP, FN):
 def specificity(TP, TN, FP, FN):
     return (TN) / (TN + FP) if (TN + FP) > 0 else 0
 
+
+def plot_single_class_cm(TP, TN, FP, FN, class_name):
+    cm_2x2 = np.array([[TN, FP],
+                       [FN, TP]])
+
+    annot_data = np.array([[f"TN\n{cm_2x2[0, 0]}", f"FP\n{cm_2x2[0, 1]}"],
+                           [f"FN\n{cm_2x2[1, 0]}", f"TP\n{cm_2x2[1, 1]}"]])
+
+    plt.figure(figsize=(4, 3))
+
+    sns.heatmap(cm_2x2,
+                annot=annot_data,
+                fmt='',
+                cmap="Blues",
+                cbar=False,
+                annot_kws={"size": 10},
+                xticklabels=['INNA', class_name.upper()],
+                yticklabels=['INNA', class_name.upper()])
+
+    plt.title(f'Klasa: {class_name.upper()}', fontsize=12)
+    plt.ylabel('Rzeczywista klasa (Actual)', fontsize=10)
+    plt.xlabel('Przewidywana klasa (Predicted)', fontsize=10)
+
+    plt.xticks(fontsize=9)
+    plt.yticks(rotation=0, fontsize=9)
+
+    plt.tight_layout()
+    # plt.savefig(f'cm_{class_name}.png', dpi=300)
+    plt.show()
+
 def run_metrics(y_true, y_pred, class_names):
     cm = confusion_matrix(y_true, y_pred)
     total_samples = cm.sum()
-    metrics = {accuracy : 'Accuracy', sensitivity_recall : 'Sensitivity Recall',
-               presision : 'Precision', f1_score : 'F1 Score', specificity : 'Specificity'}
+    metrics = {accuracy: 'Accuracy', sensitivity_recall: 'Recall',
+               presision: 'Precision', f1_score: 'F1 Score', specificity: 'Specificity'}
 
     total_TP, total_FP, total_TN, total_FN = 0, 0, 0, 0
+    table_data = []
 
     for i, class_name in enumerate(class_names):
-        print(f"\nKlasa: {class_name}")
-
         TP = cm[i, i]
-        total_TP += TP
         FP = cm[:, i].sum() - TP
-        total_FP += FP
         FN = cm[i, :].sum() - TP
-        total_FN += FN
         TN = total_samples - (TP + FP + FN)
+
+        total_TP += TP
+        total_FP += FP
+        total_FN += FN
         total_TN += TN
 
-        print(f"  True Positives  (TP): {TP}")
-        print(f"  False Positives (FP): {FP}")
-        print(f"  True Negatives  (TN): {TN}")
-        print(f"  False Negatives (FN): {FN}")
+        row_data = [class_name.upper()]
+        for metric, _ in metrics.items():
+            row_data.append(metric(TP, TN, FP, FN) * 100)
+        table_data.append(row_data)
 
-        for metric, metric_str in metrics.items():
-            score = metric(TP, TN, FP, FN)
-            print(f"  {metric_str} = {score*100:.2f}%")
+        plot_single_class_cm(TP, TN, FP, FN, class_name)
 
-    print(f"\nOgółem:")
-    print(f"  True Positives  (TP): {total_TP}")
-    print(f"  False Positives (FP): {total_FP}")
-    print(f"  True Negatives  (TN): {total_TN}")
-    print(f"  False Negatives (FN): {total_FN}")
+    plot_metrics_table(table_data, class_names)
 
+    print("\nOGÓŁEM (Wartości Micro):")
+    print(f"  Sumaryczne TP: {total_TP}")
+    print(f"  Sumaryczne FP: {total_FP}")
+    print(f"  Sumaryczne TN: {total_TN}")
+    print(f"  Sumaryczne FN: {total_FN}")
+
+    print("\nGlobalne wskaźniki (Micro-Averaged):")
     for metric, metric_str in metrics.items():
         score = metric(total_TP, total_TN, total_FP, total_FN)
-        print(f"  {metric_str} = {score * 100:.2f}%")
+        print(f"  {metric_str:<12} = {score * 100:.2f}%")
+
+
+def plot_metrics_table(table_data, class_names):
+    columns = ['Accuracy', 'Recall', 'Precision', 'F1 Score', 'Specificity']
+
+    cell_text = []
+    for row in table_data:
+        cell_text.append([f"{val:.2f}%" for val in row[1:]])
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.set_axis_off()
+
+    table = ax.table(
+        cellText=cell_text,
+        rowLabels=[name.upper() for name in class_names],
+        colLabels=columns,
+        cellLoc='center',
+        loc='center',
+        colColours=['#e1e6f0'] * len(columns),
+        rowColours=['#e1e6f0'] * len(class_names)
+    )
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1, 2)
+
+    for (row, col), cell in table.get_celld().items():
+        if row == 0 or col == -1:
+            cell.set_text_props(weight='bold')
+
+    plt.title('Szczegółowe Metryki Klasyfikacji (One-vs-Rest)', fontsize=16, weight='bold', pad=20)
+    plt.tight_layout()
+    plt.savefig('metrics_table_rf.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
