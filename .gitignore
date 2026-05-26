@@ -10,7 +10,9 @@ ENV/
 *.bin
 *.npy
 *.npz
+*.pkl
 Project/Data/
+Project/Model/
 
 *.log
 .DS_Store

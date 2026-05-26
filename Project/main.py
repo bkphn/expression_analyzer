@@ -10,7 +10,7 @@ from validation_curve import plot_tree_validation_curve
 # ----- MODEL SETTINGS -----
 PREPROCESSING = False
 TRAIN_MODEL = False
-VALIDATION_CURVE = False
+VALIDATION_CURVE = True
 
 # ----- CMD COLOR SETTINGS -----
 RED = '\033[91m \x1B[3m'
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     if TRAIN_MODEL:
         print(f"{GREEN}\nRozpoczynam klasyfikację lasem losowym...{RESET}")
-        random_forest = RandomForest(100, 15)
+        random_forest = RandomForest(500, 15)
         random_forest.train(X_train, y_train)
         print(f"{GREEN}Klasyfikacja zakończona pomyślnie.{RESET}")
         print(f"{GREEN}Zapisuję wytrenowany model do pliku...{RESET}")
@@ -70,10 +70,10 @@ if __name__ == '__main__':
             pickle.dump(random_forest, file)
         print(f"{GREEN}Model zapisany.{RESET}")
     else:
-        print(f"{GREEN}Wczytuję gotowy model z dysku...{RESET}")
+        print(f"{YELLOW}Wczytuję gotowy model z dysku...{RESET}")
         with open(MODEL_FILE, 'rb') as file:
             random_forest = pickle.load(file)
-        print(f"{GREEN}Model wczytany pomyślnie.{RESET}")
+        print(f"{YELLOW}Model wczytany pomyślnie.{RESET}")
 
     predictions = random_forest.predict(X_test)
 

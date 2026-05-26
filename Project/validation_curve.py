@@ -11,13 +11,13 @@ RESET = '\033[0m \x1B[0m'
 
 
 def plot_tree_validation_curve(X_train, y_train, X_test, y_test):
-    tree_counts = [1, 5, 10, 20, 30, 50]
+    tree_counts = [1, 5, 10, 20, 30, 50, 100, 150, 200]
 
     train_scores = []
     test_scores = []
 
     for n in tree_counts:
-        print(f"{YELLOW}Trenowanie Lasu Losowego dla n_estimators = {n}...{RESET}")
+        print(f"{GREEN}Trenowanie Lasu Losowego dla n_estimators = {n}...{RESET}")
 
         model = RandomForest(n_estimators=n, max_depth=15)
         model.train(X_train, y_train)
